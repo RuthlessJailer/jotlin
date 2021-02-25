@@ -128,7 +128,7 @@ class NativeCompilerDownloader(
 
         logger.lifecycle("Unpack Kotlin/Native compiler to $compilerDirectory")
         logger.lifecycleWithDuration("Unpack Kotlin/Native compiler to $compilerDirectory finished,") {
-            val tmpDir = Files.createTempDirectory("").toFile()
+            val tmpDir = Files.createTempDirectory(compilerDirectory.parentFile.toPath(), "compiler-").toFile()
             tmpDir.deleteOnExit()
             logger.debug("Unpacking Kotlin/Native compiler to tmp directory $tmpDir")
             project.copy {
