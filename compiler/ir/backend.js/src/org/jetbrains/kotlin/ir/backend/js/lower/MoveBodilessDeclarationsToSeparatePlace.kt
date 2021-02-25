@@ -124,15 +124,20 @@ fun markExternalDeclarations(packageFragment: IrPackageFragment) {
     }
 }
 
+private fun IrPossiblyExternalDeclaration.checkExternal() {
+    if (!isExternal) {
+        throw error("isExternal validation failed")
+    }
+}
 
 fun markNestedExternalDeclarations(declaration: IrDeclaration) {
     if (declaration is IrPossiblyExternalDeclaration) {
-        declaration.isExternal = true
+        declaration.checkExternal()
     }
     if (declaration is IrProperty) {
-        declaration.getter?.isExternal = true
-        declaration.setter?.isExternal = true
-        declaration.backingField?.isExternal = true
+        declaration.getter?.checkExternal()
+        declaration.setter?.checkExternal()
+        declaration.backingField?.checkExternal()
     }
     if (declaration is IrClass) {
         declaration.declarations.forEach {

@@ -7,6 +7,8 @@ package org.jetbrains.kotlin.ir.overrides
 
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.declarations.IrClass
+import org.jetbrains.kotlin.ir.declarations.IrPossiblyExternalDeclaration
+import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.declarations.IrTypeParametersContainer
 import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
 import org.jetbrains.kotlin.ir.symbols.IrClassifierSymbol
@@ -29,6 +31,14 @@ class DeepCopyIrTreeWithSymbolsForFakeOverrides(typeArguments: Map<IrTypeParamet
         val result = irElement.transform(copier, data = null)
 
         result.patchDeclarationParents(parent)
+        if (parent.isExternal && result is IrPossiblyExternalDeclaration) {
+            result.isExternal = true
+            if (result is IrProperty) {
+                result.getter?.let { it.isExternal = true }
+                result.setter?.let { it.isExternal = true }
+                result.backingField?.let { it.isExternal = true }
+            }
+        }
         return result
     }
 
